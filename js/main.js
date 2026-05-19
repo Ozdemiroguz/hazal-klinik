@@ -2,7 +2,8 @@
   'use strict';
 
   const header = document.getElementById('siteHeader');
-  const nav = document.getElementById('siteNav');
+  const menu = document.getElementById('mobileMenu');
+  const menuClose = document.getElementById('mobileMenuClose');
   const toggle = document.getElementById('navToggle');
   const themeBtn = document.getElementById('themeToggle');
 
@@ -25,17 +26,32 @@
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  // Mobile menu toggle
-  if (toggle && nav) {
-    toggle.addEventListener('click', () => {
-      const open = nav.classList.toggle('open');
+  // Mobile menu — body-level overlay (not inside header to avoid stacking context issues)
+  if (toggle && menu) {
+    const setOpen = (open) => {
+      if (open) {
+        menu.removeAttribute('hidden');
+        // Force reflow so the transition kicks in
+        void menu.offsetWidth;
+      }
+      menu.classList.toggle('open', open);
+      document.body.classList.toggle('menu-open', open);
       toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Menüyü kapat' : 'Menüyü aç');
+      if (!open) {
+        setTimeout(() => { if (!menu.classList.contains('open')) menu.setAttribute('hidden', ''); }, 260);
+      }
+    };
+    toggle.addEventListener('click', () => setOpen(!menu.classList.contains('open')));
+    if (menuClose) menuClose.addEventListener('click', () => setOpen(false));
+    menu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => setOpen(false));
     });
-    nav.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        nav.classList.remove('open');
-        toggle.setAttribute('aria-expanded', 'false');
-      });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && menu.classList.contains('open')) setOpen(false);
+    });
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 720 && menu.classList.contains('open')) setOpen(false);
     });
   }
 

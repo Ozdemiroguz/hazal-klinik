@@ -159,6 +159,100 @@ p { color: var(--c-muted); }
   align-items: center; justify-content: center;
 }
 .nav-toggle svg { width: 24px; height: 24px; }
+.nav-toggle .icon-close { display: none; }
+body.menu-open .nav-toggle .icon-open { display: none; }
+body.menu-open .nav-toggle .icon-close { display: block; }
+
+/* ============ MOBILE MENU OVERLAY (body-level, not in header) ============ */
+.mobile-menu {
+  position: fixed;
+  inset: 0;
+  background: #ffffff;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .25s ease, visibility .25s;
+}
+.mobile-menu[hidden] { display: none !important; }
+[data-theme="dark"] .mobile-menu { background: #0b1220; }
+.mobile-menu.open { opacity: 1; visibility: visible; }
+body.menu-open { overflow: hidden; }
+.mobile-menu-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--c-bg-alt);
+  color: var(--c-text);
+  border: 1px solid var(--c-border);
+  z-index: 2;
+  cursor: pointer;
+}
+.mobile-menu-close svg { width: 22px; height: 22px; }
+.mobile-menu-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px 28px 40px;
+  max-width: 480px;
+  width: 100%;
+  margin: 0 auto;
+}
+.mobile-menu-nav ul { display: flex; flex-direction: column; gap: 0; margin-bottom: 32px; }
+.mobile-menu-nav ul li { border-bottom: 1px solid var(--c-border); }
+.mobile-menu-nav ul li:last-child { border-bottom: 0; }
+.mobile-menu-nav a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 4px;
+  font-size: 22px;
+  font-weight: 600;
+  font-family: var(--font-head);
+  color: var(--c-text);
+  letter-spacing: -0.01em;
+  transition: color .2s ease, padding-left .25s ease;
+}
+.mobile-menu-nav a::after {
+  content: "→";
+  color: var(--c-primary);
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: opacity .25s ease, transform .25s ease;
+}
+.mobile-menu-nav a:hover,
+.mobile-menu-nav a.active {
+  color: var(--c-primary);
+  padding-left: 8px;
+}
+.mobile-menu-nav a:hover::after,
+.mobile-menu-nav a.active::after {
+  opacity: 1;
+  transform: none;
+}
+.mobile-menu-ctas {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.mobile-menu-ctas .btn {
+  width: 100%;
+  justify-content: center;
+  padding: 16px;
+  font-size: 16px;
+}
+
+/* Desktop: menüyü tamamen gizle */
+@media (min-width: 721px) {
+  .mobile-menu { display: none !important; }
+}
 
 /* Theme toggle */
 .theme-toggle {
@@ -840,33 +934,6 @@ section { padding: 96px 0; }
   .nav-links { display: none; }
   .nav-toggle { display: inline-flex; }
   .nav-cta .btn { display: none; }
-  /* Mobil menü - opaque arkaplan + backdrop */
-  .site-nav.open::before {
-    content: "";
-    position: fixed;
-    inset: var(--header-h) 0 0 0;
-    background: rgba(0, 0, 0, .45);
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
-    z-index: 1;
-  }
-  .site-nav.open .nav-links {
-    display: flex;
-    position: absolute;
-    top: calc(var(--header-h) - 8px);
-    left: 16px; right: 16px;
-    flex-direction: column;
-    align-items: stretch;
-    background: var(--c-bg);
-    border: 1px solid var(--c-border);
-    border-radius: var(--radius);
-    padding: 12px;
-    box-shadow: var(--shadow-lg);
-    gap: 4px;
-    z-index: 2;
-  }
-  [data-theme="dark"] .site-nav.open .nav-links { background: #14223a; }
-  .site-nav.open .nav-links a { padding: 14px 16px; font-size: 16px; }
   .services-grid, .doctors-grid, .testimonials-grid, .pillars-grid, .values-grid, .trust-grid { grid-template-columns: 1fr; }
   .cta-banner { grid-template-columns: 1fr; padding: 40px 28px; text-align: center; }
   .cta-banner .ctas { justify-content: center; flex-wrap: wrap; }
@@ -884,6 +951,19 @@ section { padding: 96px 0; }
 
   /* Mobilde hero floating kartlarını gizle - hero-mini zaten istatistikleri taşıyor */
   .hero-card.hc-1, .hero-card.hc-2, .hero-card.hc-3 { display: none; }
+
+  /* Mobilde hero — görsel önce gelsin, daha kompakt yükseklik */
+  .hero-grid { gap: 28px; }
+  .hero-content { order: 2; }
+  .hero-visual {
+    order: 1;
+    max-width: none;
+    aspect-ratio: 16 / 11;
+    border-radius: 20px;
+    margin: 0 -8px;
+  }
+  .hero h1 { font-size: clamp(2rem, 8vw, 2.5rem); }
+  .hero-lede { font-size: 16px; }
   .footer-grid { grid-template-columns: 1fr; gap: 32px; }
   .float-wa { right: 16px; bottom: 16px; width: 54px; height: 54px; }
   .doctor-row .body { padding: 24px; }
